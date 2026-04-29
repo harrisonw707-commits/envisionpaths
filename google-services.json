@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "660846603682",
+    "project_id": "career-coaching-2d69e",
+    "storage_bucket": "career-coaching-2d69e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660846603682:android:c4ac9830a9dd61009b16fb",
+        "android_client_info": {
+          "package_name": "app.run.us_west1.envisionpaths_36560900479.twa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCvg75oIKnKTA3RWL0ISGfcFGU0DbtObo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660846603682:android:cbf892a33af390d59b16fb",
+        "android_client_info": {
+          "package_name": "envisonpaths.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCvg75oIKnKTA3RWL0ISGfcFGU0DbtObo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

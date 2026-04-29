@@ -1,0 +1,8 @@
+{
+  "name": "envisionpaths",
+  "description": "A professional career coaching tool that provides real-time interactive practice sessions, personalized feedback, and interview simulation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

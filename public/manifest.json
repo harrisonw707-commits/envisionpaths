@@ -1,0 +1,62 @@
+{
+  "short_name": "Envision",
+  "name": "EnvisionPaths",
+  "description": "Professional AI-powered interview coaching. Practice real-time sessions with personalized feedback to land your dream job.",
+  "categories": ["education", "productivity", "business", "social"],
+  "dir": "ltr",
+  "lang": "en",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "e84c78b4-39bb-4514-90a4-747d6961d685",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://picsum.photos/seed/envision1/1080/1920",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "AI Interview Practice"
+    },
+    {
+      "src": "https://picsum.photos/seed/envision2/1080/1920",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Real-time Feedback"
+    },
+    {
+      "src": "https://picsum.photos/seed/envision3/1920/1080",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Dashboard Overview"
+    }
+  ],
+ "start_url": "https://envisionpaths.web.app",
+"id": "https://envisionpaths.web.app",
+"scope": "https://envisionpaths.web.app",
+  "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay"],
+  "orientation": "portrait",
+  "theme_color": "#ef4444",
+  "background_color": "#000000"
+}

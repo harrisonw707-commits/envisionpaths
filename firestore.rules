@@ -1,0 +1,153 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - email: string (required, email format)
+    //   - is_admin: bool (optional)
+    //   - created_at: timestamp (required)
+    //
+    // Collection: simulations
+    // Document ID: {simulationId}
+    // Fields:
+    //   - user_id: string (required, matches owner)
+    //   - job_title: string (required, < 100 chars)
+    //   - industry: string (required, < 100 chars)
+    //   - score: int (optional, 0-100)
+    //   - feedback: string (optional, < 5000 chars)
+    //   - status: string (required, enum: started, completed)
+    //   - created_at: timestamp (required)
+    //
+    // Collection: simulations/{simulationId}/messages
+    // Document ID: {messageId}
+    // Fields:
+    //   - simulation_id: string (required, matches parent)
+    //   - role: string (required, enum: user, model)
+    //   - content: string (required, < 5000 chars)
+    //   - created_at: timestamp (required)
+    //
+    // Collection: reminders
+    // Document ID: {reminderId}
+    // Fields:
+    //   - user_id: string (required, matches owner)
+    //   - title: string (required, < 200 chars)
+    //   - description: string (optional, < 1000 chars)
+    //   - scheduled_at: timestamp (required)
+    //   - completed: bool (required)
+    //   - created_at: timestamp (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true) ||
+          (request.auth.token.email == "harrisonw707@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['email', 'created_at']) &&
+             hasOnlyAllowedFields(['email', 'is_admin', 'created_at']) &&
+             isValidEmail(data.email) &&
+             data.created_at is timestamp;
+    }
+
+    function isValidSimulation(data) {
+      return hasRequiredFields(['user_id', 'job_title', 'industry', 'status', 'created_at']) &&
+             hasOnlyAllowedFields(['user_id', 'job_title', 'industry', 'score', 'feedback', 'status', 'created_at']) &&
+             data.user_id == request.auth.uid &&
+             data.job_title is string && data.job_title.size() > 0 && data.job_title.size() < 100 &&
+             data.industry is string && data.industry.size() > 0 && data.industry.size() < 100 &&
+             data.status in ['started', 'completed'] &&
+             data.created_at is timestamp &&
+             (!('score' in data) || (data.score is int && data.score >= 0 && data.score <= 100)) &&
+             (!('feedback' in data) || (data.feedback is string && data.feedback.size() < 5000));
+    }
+
+    function isValidMessage(data, simulationId) {
+      return hasRequiredFields(['simulation_id', 'role', 'content', 'created_at']) &&
+             hasOnlyAllowedFields(['simulation_id', 'role', 'content', 'created_at']) &&
+             data.simulation_id == simulationId &&
+             data.role in ['user', 'model'] &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 5000 &&
+             data.created_at is timestamp;
+    }
+
+    function isValidReminder(data) {
+      return hasRequiredFields(['user_id', 'title', 'scheduled_at', 'completed', 'created_at']) &&
+             hasOnlyAllowedFields(['user_id', 'title', 'description', 'scheduled_at', 'completed', 'created_at']) &&
+             data.user_id == request.auth.uid &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.scheduled_at is timestamp &&
+             data.completed is bool &&
+             data.created_at is timestamp &&
+             (!('description' in data) || (data.description is string && data.description.size() < 1000));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.is_admin != true;
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.is_admin == resource.data.is_admin && request.resource.data.created_at == resource.data.created_at) || isAdmin();
+    }
+
+    match /simulations/{simulationId} {
+      allow read: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidSimulation(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin()) && isValidSimulation(request.resource.data) && request.resource.data.user_id == resource.data.user_id && request.resource.data.created_at == resource.data.created_at;
+      allow delete: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin());
+
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && (get(/databases/$(database)/documents/simulations/$(simulationId)).data.user_id == request.auth.uid || isAdmin());
+        allow create: if isAuthenticated() && (get(/databases/$(database)/documents/simulations/$(simulationId)).data.user_id == request.auth.uid || isAdmin()) && isValidMessage(request.resource.data, simulationId);
+      }
+    }
+
+    match /reminders/{reminderId} {
+      allow read: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidReminder(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin()) && isValidReminder(request.resource.data) && request.resource.data.user_id == resource.data.user_id && request.resource.data.created_at == resource.data.created_at;
+      allow delete: if isAuthenticated() && (resource.data.user_id == request.auth.uid || isAdmin());
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.run.us_west1.envisionpaths_36560900479.twa",
+      "sha256_cert_fingerprints":
+        ["E3:5E:32:FE:98:9C:38:9E:46:03:BB:9E:B7:1C:CB:83:44:B3:A5:E9:CE:A6:DE:9B:75:03:40:2C:0C:49:36:3F", "16:B8:86:4B:98:3B:24:81:1C:D0:F2:52:7B:49:5D:F8:52:F4:85:45:CA:C4:C1:F8:84:F2:6E:BD:51:40:FF:EF"]
+    }
+  }
+]
