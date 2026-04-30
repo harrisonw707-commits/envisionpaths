@@ -4315,20 +4315,19 @@ Format the output with professional formatting, using bold headers, emojis for v
                           <button
                             onClick={() => setIsScheduling(true)}
                             className="flex-1 py-4 bg-theme-surface-hover hover:opacity-80 text-theme-primary text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-theme flex items-center justify-center gap-2"
-                          >
-                            <Clock size={14} />
-                            Schedule
-                          </button>
-                          <button
-                            onClick={() => {
+                            >
+                            </button>
+                            <button
+                                onClick={() => {
                               setIsExporting(true);
-                              setTimeout(() => setIsExporting(false), 2000);
-                            }}
-                            className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2"
-                          >
-                            <Download size={14} />
+                               exportReport();
+                               setTimeout(() => setIsExporting(false), 2000);
+                                }}
+                              className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2"
+                            >
+                             <Download size={14} />
                             {isExporting ? 'Exporting...' : 'Export Report'}
-                          </button>
+                            </button>
                         </div>
                       )}
                     </div>
